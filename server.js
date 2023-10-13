@@ -1,6 +1,6 @@
 // 1. Import Express
 import express from 'express';
-import * as ProductRouter from './src/features/product/product.routes.js';
+import ProductRouter from './src/features/product/product.routes.js';
 
 // 2. Create Server
 const server = express();
