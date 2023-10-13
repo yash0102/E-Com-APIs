@@ -11,5 +11,6 @@ const productController = new ProductController();
 // All the paths to controller methods(/api/products).
 router.get('/', productController.getAllProducts);
 router.post('/', upload.single('imageUrl'), productController.addProduct);
+router.get('/:id', productController.getOneProduct);
 
 export default router;
