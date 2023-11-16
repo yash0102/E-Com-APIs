@@ -32,4 +32,11 @@ let users = [
         password: '1234567890',
         type:'seller',
     },
+    {
+        id: 2,
+        name: 'Customer User',
+        email: 'customer@ecom.com',
+        password: '1234567890',
+        type:'customer',
+    },
 ];
