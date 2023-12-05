@@ -10,6 +10,7 @@ import basicAuthorizer from './src/middlewares/basicAuth.middleware.js';
 import jwtAuth from './src/middlewares/jwt.middleware.js';
 import cartRouter from './src/features/cartItems/cartItems.routes.js';
 import apiDocs from './swagger.json' assert {type: 'json'};
+import loggerMiddleware from './src/middlewares/logger.middleware.js';
 
 // 2. Create Server
 const server = express();
@@ -22,20 +23,8 @@ var corsOptions = {
 }
 server.use(cors(corsOptions));
 
-// server.use(cors()); allow to everyone origin, headers, methods
+server.use(loggerMiddleware);
 
-// server.use((req, res, next)=> {
-//     res.header('Access-Control-Allow-Origin', 'http://localhost:5500');
-//     res.header('Access-Control-Allow-Headers', '*'); // "*" means allow to every one
-//     res.header('Access-Control-Allow-Methods', '*');
-//     // return ok for preflight request.
-//     if (req.method == "OPTIONS") {
-//         return res.sendStatus(200);
-//     }
-//     next();
-// })
-
-// for all requests related to product , redirect to product routes.
 server.use('/api-docs', swagger.serve , swagger.setup(apiDocs)); 
 server.use('/api/products', jwtAuth ,ProductRouter); 
 server.use('/api/cartItems', jwtAuth ,cartRouter); 
