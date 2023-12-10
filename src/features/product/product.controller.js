@@ -19,17 +19,18 @@ export default class ProductController {
         res.status(201).send(createdRecord); // 201 means resources has been created
     }
 
-    rateProduct(req, res) {
-        const userID = req.query.userID;
-        const productID = req.query.productID;
-        const rating = req.query.rating;
-
+    rateProduct(req, res, next) {
         try {
+            const userID = req.query.userID;
+            const productID = req.query.productID;
+            const rating = req.query.rating;
+    
             ProductModel.rateProduct( userID, productID, rating);
+            return res.status(200).send('Rating added successfully');          
         } catch (error) {
-            return res.status(400).send(error.message);
-        } 
-        return res.status(200).send('Rating added successfully');
+            console.log("check error");
+            next(error);
+        }
     }
 
     getOneProduct(req, res) {
