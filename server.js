@@ -10,8 +10,7 @@ import basicAuthorizer from './src/middlewares/basicAuth.middleware.js';
 import jwtAuth from './src/middlewares/jwt.middleware.js';
 import cartRouter from './src/features/cartItems/cartItems.routes.js';
 import apiDocs from './swagger.json' assert {type: 'json'};
-import loggerMiddleware from './src/middlewares/logger.middleware.js';
-import { ApplicationError } from './src/error-handler/applicationError.js';
+import { errorHandlerMiddleware } from './src/middlewares/errorHandler.js';
 
 // 2. Create Server
 const server = express();
@@ -24,8 +23,6 @@ var corsOptions = {
 }
 server.use(cors(corsOptions));
 
-server.use(loggerMiddleware);
-
 server.use('/api-docs', swagger.serve , swagger.setup(apiDocs)); 
 server.use('/api/products', jwtAuth ,ProductRouter); 
 server.use('/api/cartItems', jwtAuth ,cartRouter); 
@@ -37,16 +34,7 @@ server.get("/", (req, res) => {
 })
 
 // Error handler middleware (sholud be in last)
-server.use((err, req, res, next)=> {
-    console.log(err);
-    // user defined errors
-    if(err instanceof ApplicationError) {
-        res.status(err.code).send(err.message);
-    }
-
-    // server errors
-    res.status(500).send('Something went wrong, please try later');
-});
+server.use(errorHandlerMiddleware);
 
 // Middleware to handle 404 requests.
 server.use((req, res) => {

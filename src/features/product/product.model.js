@@ -1,4 +1,4 @@
-import { ApplicationError } from "../../error-handler/applicationError.js";
+import { customErrorHandler } from "../../middlewares/errorHandler.js";
 import UserModel from "../user/user.model.js";
 
 export default class ProductModel {
@@ -42,12 +42,12 @@ export default class ProductModel {
         // 1. Validate user and product
         const user = UserModel.getAll().find( (u) => u.id == userID);
         if(!user){
-            throw new ApplicationError('User not found', 404);
+            throw new customErrorHandler('User not found', 404);
         }
 
         const product = products.find( (p)=> p.id == productID);
         if(!product) {
-            throw new ApplicationError('Product not found', 400);
+            throw new customErrorHandler('Product not found', 400);
         }
 
         // 2. check if there are any ratings and if not then add ratings array.
