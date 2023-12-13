@@ -11,7 +11,7 @@ import jwtAuth from './src/middlewares/jwt.middleware.js';
 import cartRouter from './src/features/cartItems/cartItems.routes.js';
 import apiDocs from './swagger.json' assert {type: 'json'};
 import { errorHandlerMiddleware } from './src/middlewares/errorHandler.js';
-import connectToMongoDB from './src/config/mongodb.js';
+import { connectToMongoDB } from './src/config/mongodb.js';
 
 // 2. Create Server
 const server = express();

@@ -1,17 +1,29 @@
+import { getDB } from "../../config/mongodb.js";
+import { customErrorHandler } from "../../middlewares/errorHandler.js";
+
 export default class UserModel {
     constructor( name, email, password, type, id) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.type=type;
-        this.id = id;
+        this._id = id;
     }
 
-    static signUp(name, email, password, type) {
-        const newUser = new UserModel( name, email, password, type);
-        newUser.id = users.length +1;
-        users.push(newUser);
-        return newUser;
+    static async signUp(name, email, password, type) {
+        try {
+            // 1. Get the database
+            const db = getDB();
+            // 2. Get the collection
+            const collection = db.collection("users");
+    
+            const newUser = new UserModel( name, email, password, type);
+            // 3. Insert the document
+            await collection.insertOne(newUser);
+            return newUser;
+        } catch (err) {
+            throw new customErrorHandler("Something went wrong", 500);
+        }
     }
 
     static signIn ( email , password) {
