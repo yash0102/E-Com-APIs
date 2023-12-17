@@ -3,6 +3,7 @@ import express from 'express';
 import swagger from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import 'dotenv/config';
 
 import ProductRouter from './src/features/product/product.routes.js';
 import UserRouter from './src/features/user/user.routes.js';
