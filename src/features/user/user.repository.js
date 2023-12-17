@@ -33,6 +33,22 @@ class UserRepository {
             throw new customErrorHandler("Something went wrong with database", 500);
         }
     }
+
+    async findByEmail(email) {
+        try {
+            // 1. Get the database
+            const db = getDB();
+            // 2. Get the collection
+            const collection = db.collection("users");
+            // 3. Find the document
+            const user = await collection.findOne({email});
+            return user;
+        } catch (err) {
+            console.log(err);
+            throw new customErrorHandler("Something went wrong with database", 500);
+        }
+    }
+
 }
 
 export default UserRepository;
