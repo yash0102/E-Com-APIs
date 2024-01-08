@@ -69,11 +69,19 @@ class ProductRepository{
         }
     }
 
-    rate(userID, productID, rating){
+    async rate(userID, productID, rating){
         try{
             const db = getDB();
             const collection = db.collection(this.collection);
-            collection.updateOne({
+            // 1. Removes existing entry
+            await collection.updateOne({
+                _id: new ObjectId(productID)
+            },{
+                $pull:{ratings:{userID: new ObjectId(userID)}}
+            })
+
+            // 2. Add new entry
+            await collection.updateOne({
                 _id:new ObjectId(productID)
             },{
                 $push: {ratings: {userID:new ObjectId(userID), rating}}
