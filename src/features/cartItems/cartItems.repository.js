@@ -11,9 +11,14 @@ export default class CartItemsRepository {
         try {
             const db = getDB();
             const collection = db.collection(this.collection);
+            const id = await this.getNextCounter(db);
+
             await collection.updateOne(
                 { productID: new ObjectId(productID), userID: new ObjectId(userID)},
-                {$inc:{ quantity: quantity }},
+                {
+                    $setOnInsert: {_id: id},
+                    $inc:{ quantity: quantity }
+                },
                 { upsert: true}
             );
         } catch (err) {
@@ -37,11 +42,22 @@ export default class CartItemsRepository {
         try {
             const db = getDB();
             const collection = db.collection(this.collection);
-            const result = await collection.deleteOne({_id: new ObjectId(cartItemID), userID: new ObjectId(userID)});
+            const result = await collection.deleteOne({_id: new ObjectId(cartItemID), userID: new ObjectId(userID)}); // _id: parseInt(cartItemID) in case of modifying _id
             return result.deletedCount > 0;
         } catch (err) {
             console.log(err);
             throw new customErrorHandler("Something went wrong with the database", 500);
         }
+    }
+
+    async getNextCounter(db) {
+        const resultDocument = await db.collection("counters").findOneAndUpdate(
+            {_id:'cartItemId'},
+            {$inc:{value:1}},
+            {returnDocument:'after'}
+        )
+
+        console.log(resultDocument);
+        return resultDocument.value;
     }
 }
