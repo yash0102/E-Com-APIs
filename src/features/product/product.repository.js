@@ -61,7 +61,7 @@ class ProductRepository{
             if(categories){
                 filterExpression = {$or: [{category:{$in:categories}}, filterExpression]}
             }
-            return await collection.find(filterExpression).toArray();
+            return await collection.find(filterExpression).project({name:1, price:1, _id:0, ratings:{$slice:-1}}).toArray();
             
         }catch(err){
             console.log(err);
