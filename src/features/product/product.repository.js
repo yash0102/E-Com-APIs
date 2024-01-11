@@ -47,7 +47,7 @@ class ProductRepository{
         }
     }
 
-    async filter(minPrice, maxPrice, category){
+    async filter(minPrice, categories){
         try{
             const db = getDB();
             const collection = db.collection(this.collection);
@@ -55,11 +55,11 @@ class ProductRepository{
             if(minPrice){
                 filterExpression.price = {$gte: parseFloat(minPrice)}
             }
-            if(maxPrice){
-                filterExpression.price = {...filterExpression.price, $lte: parseFloat(maxPrice)}
-            }
-            if(category){
-                filterExpression.category=category;
+
+            categories = JSON.parse(categories.replace(/'/g,'"'));
+            console.log(categories);
+            if(categories){
+                filterExpression = {$or: [{category:{$in:categories}}, filterExpression]}
             }
             return await collection.find(filterExpression).toArray();
             
