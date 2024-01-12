@@ -26,6 +26,9 @@ router.post('/', upload.single('imageUrl'), (req, res)=>{
     productController.addProduct(req, res)
 });
 
+router.get('/averagePrice', (req, res, next)=>{
+    productController.averagePrice(req, res, next)
+});
 router.get('/:id', (req, res)=>{
     productController.getOneProduct(req, res)
 });
