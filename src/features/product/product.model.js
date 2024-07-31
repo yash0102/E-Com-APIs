@@ -2,7 +2,7 @@ import { customErrorHandler } from "../../middlewares/errorHandler.js";
 import UserModel from "../user/user.model.js";
 
 export default class ProductModel {
-    constructor(name, desc, price, imageUrl, category, sizes, id) {
+    constructor(name, desc, price, imageUrl, category, sizes, stock, id) {
         this._id = id;
         this.name = name;
         this.desc = desc;
@@ -10,6 +10,7 @@ export default class ProductModel {
         this.category = category;
         this.price = price;
         this.sizes = sizes;
+        this.stock = stock;
     }
 
     static add(product) {
