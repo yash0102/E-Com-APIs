@@ -1,7 +1,13 @@
 import {ObjectId} from 'mongodb';
 import { getDB } from "../../config/mongodb.js";
 import { customErrorHandler } from '../../middlewares/errorHandler.js';
+import mongoose from 'mongoose';
+import { productSchema } from './product.Schema.js';
+import { reviewSchema } from './review.schema.js';
 
+// No need to write 'Products' mongoose add 's' internally
+const ProductModel = mongoose.model('Product', productSchema);
+const ReviewModel = mongoose.model('Review', reviewSchema);
 
 
 class ProductRepository{
@@ -71,22 +77,26 @@ class ProductRepository{
 
     async rate(userID, productID, rating){
         try{
-            const db = getDB();
-            const collection = db.collection(this.collection);
-            // 1. Removes existing entry
-            await collection.updateOne({
-                _id: new ObjectId(productID)
-            },{
-                $pull:{ratings:{userID: new ObjectId(userID)}}
-            })
+            // Check if Product exists
+            const productToUpdate = await ProductModel.findById(productID);
+            if(!productToUpdate){
+                throw new Error("Product not found");
+            }
 
-            // 2. Add new entry
-            await collection.updateOne({
-                _id:new ObjectId(productID)
-            },{
-                $push: {ratings: {userID:new ObjectId(userID), rating}}
-            })
-
+            // Get the existing review
+            const userReview = await ReviewModel.findOne({product: new ObjectId(productID), user: new ObjectId(userID)});
+            console.log("userReview ", userReview);
+            if(userReview){
+                userReview.rating = rating;
+                await userReview.save();
+            }else {
+                const newReview = new ReviewModel({
+                    product: new ObjectId(productID),
+                    user: new ObjectId(userID),
+                    rating: rating
+                });
+                newReview.save();
+            }
         }catch(err){
             console.log(err);
             throw new customErrorHandler("Something went wrong with database", 500);
