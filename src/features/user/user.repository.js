@@ -30,8 +30,12 @@ export default class UserRepository{
             const newUser = new UserModel(user);
             await newUser.save();
         } catch (err) {
-            console.log(err);
-            throw new customErrorHandler("Something went wrong with database", 500);
+            if(err instanceof mongoose.Error.ValidationError){
+                throw err
+            }else {
+                console.log(err);
+                throw new customErrorHandler("Something went wrong with database", 500);
+            }
         }
     }
 
