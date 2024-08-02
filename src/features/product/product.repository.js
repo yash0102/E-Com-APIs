@@ -4,10 +4,12 @@ import { customErrorHandler } from '../../middlewares/errorHandler.js';
 import mongoose from 'mongoose';
 import { productSchema } from './product.Schema.js';
 import { reviewSchema } from './review.schema.js';
+import { categorySchema } from './category.schema.js';
 
 // No need to write 'Products' mongoose add 's' internally
 const ProductModel = mongoose.model('Product', productSchema);
 const ReviewModel = mongoose.model('Review', reviewSchema);
+const CategoriyModel = mongoose.model('Category', categorySchema);
 
 
 class ProductRepository{
@@ -16,13 +18,24 @@ class ProductRepository{
         this.collection = "products";
     }
 
-    async add(newProduct){
+    async add(productData){
         try{
-            // 1 . Get the db.
-            const db = getDB();
-            const collection = db.collection(this.collection);
-            await collection.insertOne(newProduct);
-            return newProduct;
+            // Add the Product
+            productData.categories = productData.category.split(',').map(e=> e.trim());
+            console.log("productData ", productData);
+            const newProduct = new ProductModel(productData);
+            const savedProduct = await newProduct.save();
+
+            // Update categories
+            await CategoriyModel.updateMany(
+                { _id: {
+                    $in: productData.categories
+                }},
+
+                {
+                    $push: { products: new ObjectId(savedProduct._id)}
+                }
+            );
         } catch(err){
             console.log(err);
             throw new customErrorHandler("Something went wrong with database", 500);
